@@ -34,6 +34,11 @@ scrape_configs:
       - names: ["tasks.cadvisor"]
         type: A
         port: 8080
+  - job_name: "node-exporter"
+    dns_sd_configs:
+      - names: ["tasks.node-exporter"]
+        type: A
+        port: 9100
 # Alerting specifies settings related to the Alertmanager.
 # alerting:
 #   alert_relabel_configs:
