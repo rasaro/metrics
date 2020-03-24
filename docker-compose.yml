@@ -78,6 +78,8 @@ services:
 
   grafana:
     image: grafana/grafana:6.7.1
+    environment:
+      - GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS}
     networks:
       - metrics
       - traefik
