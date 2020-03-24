@@ -64,6 +64,7 @@ services:
       - ALERTMANAGER_URI=http://alertmanager:9093
     networks:
       - metrics
+      - traefik
     deploy:
       mode: replicated
       replicas: 1
