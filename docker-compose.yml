@@ -5,10 +5,9 @@ services:
     networks:
       - prometheus
       - traefik
-    ports:
-      - 9090:9090
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alert.rules.yml:/etc/prometheus/alert.rules.yml
     deploy:
       mode: replicated
       replicas: 1
@@ -44,6 +43,39 @@ services:
       - /:/rootfs:ro
     deploy:
       mode: global
+
+  alertmanager:
+    image: prom/alertmanager
+    networks:
+      - prometheus
+    ports:
+      - 9093:9093
+    volumes:
+      - ./config.yml:/etc/alertmanager/config.yml
+      - ${ALERTMANAGER_STORAGE_FOLDER}:/alertmanager
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  karma:
+    image: lmierzwa/karma:v0.56
+    environment:
+      - ALERTMANAGER_URI=http://alertmanager:9093
+    networks:
+      - prometheus
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.karma.rule=Host(`${KARMA_DOMAIN}`)
+        - traefik.http.routers.karma.entryPoints=https
+        - traefik.http.routers.karma.tls=true
+        - traefik.http.routers.karma.tls.certresolver=letsencrypt
+        - traefik.http.services.karma.loadbalancer.server.port=8080
 
 networks:
   prometheus:
