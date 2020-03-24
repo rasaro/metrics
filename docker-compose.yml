@@ -79,6 +79,7 @@ services:
     image: grafana/grafana:6.7.1
     networks:
       - metrics
+      - traefik
     deploy:
       mode: replicated
       replicas: 1
