@@ -1,7 +1,7 @@
 version: "3"
 services:
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v2.16.0
     networks:
       - prometheus
       - traefik
@@ -16,7 +16,7 @@ services:
           - node.role == manager
 
   cadvisor:
-    image: google/cadvisor:latest
+    image: rasaro/cadvisor:v0.36.0
     networks:
       - prometheus
     volumes:
@@ -28,7 +28,7 @@ services:
       mode: global
 
   node-exporter:
-    image: prom/node-exporter
+    image: prom/node-exporter:v0.18.1
     command:
       - --path.procfs=/host/proc
       - --path.sysfs=/host/sys
@@ -45,11 +45,9 @@ services:
       mode: global
 
   alertmanager:
-    image: prom/alertmanager
+    image: prom/alertmanager:v0.20.0
     networks:
       - prometheus
-    ports:
-      - 9093:9093
     volumes:
       - ./alertmanager/config.yml:/etc/alertmanager/config.yml
       - ${ALERTMANAGER_STORAGE_FOLDER}:/alertmanager
@@ -76,6 +74,21 @@ services:
         - traefik.http.routers.karma.tls=true
         - traefik.http.routers.karma.tls.certresolver=letsencrypt
         - traefik.http.services.karma.loadbalancer.server.port=8080
+
+  grafana:
+    image: grafana/grafana:6.7.1
+    networks:
+      - prometheus
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.grafana.rule=Host(`${GRAFANA_DOMAIN}`)
+        - traefik.http.routers.grafana.entryPoints=https
+        - traefik.http.routers.grafana.tls=true
+        - traefik.http.routers.grafana.tls.certresolver=letsencrypt
+        - traefik.http.services.grafana.loadbalancer.server.port=3000
 
 networks:
   prometheus:
