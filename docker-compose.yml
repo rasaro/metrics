@@ -6,8 +6,8 @@ services:
       - prometheus
       - traefik
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./alert.rules.yml:/etc/prometheus/alert.rules.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml
     deploy:
       mode: replicated
       replicas: 1
@@ -51,7 +51,7 @@ services:
     ports:
       - 9093:9093
     volumes:
-      - ./config.yml:/etc/alertmanager/config.yml
+      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
       - ${ALERTMANAGER_STORAGE_FOLDER}:/alertmanager
     deploy:
       mode: replicated
