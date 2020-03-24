@@ -1,6 +1,6 @@
-# monitoring
+# metrics
 
-Monitoring configuration
+Metrics configuration
 
 ## Requirements
 
@@ -22,5 +22,5 @@ Fill in fields in `.env`
 #### Run container
 
 ```
-docker stack deploy -c <(docker-compose config) monitoring
+docker stack deploy -c <(docker-compose config) metrics
 ```

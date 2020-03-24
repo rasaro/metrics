@@ -3,7 +3,7 @@ services:
   prometheus:
     image: prom/prometheus:v2.16.0
     networks:
-      - prometheus
+      - metrics
       - traefik
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -18,7 +18,7 @@ services:
   cadvisor:
     image: rasaro/cadvisor:v0.36.0
     networks:
-      - prometheus
+      - metrics
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -36,7 +36,7 @@ services:
       - --collector.filesystem.ignored-mount-points=^(/rootfs|/host|)/(sys|proc|dev|host|etc)($$|/)
       - --collector.filesystem.ignored-fs-types=^(sys|proc|auto|cgroup|devpts|ns|au|fuse\.lxc|mqueue)(fs|)$$
     networks:
-      - prometheus
+      - metrics
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -47,7 +47,7 @@ services:
   alertmanager:
     image: prom/alertmanager:v0.20.0
     networks:
-      - prometheus
+      - metrics
     volumes:
       - ./alertmanager/config.yml:/etc/alertmanager/config.yml
       - ${ALERTMANAGER_STORAGE_FOLDER}:/alertmanager
@@ -63,7 +63,7 @@ services:
     environment:
       - ALERTMANAGER_URI=http://alertmanager:9093
     networks:
-      - prometheus
+      - metrics
     deploy:
       mode: replicated
       replicas: 1
@@ -78,7 +78,7 @@ services:
   grafana:
     image: grafana/grafana:6.7.1
     networks:
-      - prometheus
+      - metrics
     deploy:
       mode: replicated
       replicas: 1
@@ -91,6 +91,6 @@ services:
         - traefik.http.services.grafana.loadbalancer.server.port=3000
 
 networks:
-  prometheus:
+  metrics:
   traefik:
     external: true
