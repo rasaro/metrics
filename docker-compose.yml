@@ -33,8 +33,6 @@ services:
       - --path.procfs=/host/proc
       - --path.sysfs=/host/sys
       - --path.rootfs=/host
-      - --collector.filesystem.ignored-mount-points=^(/rootfs|/host|)/(sys|proc|dev|host|etc)($$|/)
-      - --collector.filesystem.ignored-fs-types=^(sys|proc|auto|cgroup|devpts|ns|au|fuse\.lxc|mqueue)(fs|)$$
     networks:
       - metrics
     volumes:
