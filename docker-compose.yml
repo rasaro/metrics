@@ -62,12 +62,13 @@ services:
       - ALERTMANAGER_URI=http://alertmanager:9093
     networks:
       - metrics
+      - traefik
     deploy:
       mode: replicated
       replicas: 1
       labels:
         - traefik.enable=true
-        - traefik.http.routers.karma.rule=Host(`${KARMA_DOMAIN}`)
+        - traefik.http.routers.karma.rule=Host(`karma.metrics.${DOMAIN}`)
         - traefik.http.routers.karma.entryPoints=https
         - traefik.http.routers.karma.tls=true
         - traefik.http.routers.karma.tls.certresolver=letsencrypt
@@ -75,14 +76,22 @@ services:
 
   grafana:
     image: grafana/grafana:6.7.1
+    environment:
+      - GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS}
     networks:
       - metrics
+      - traefik
+    volumes:
+      - ${GRAFANA_DATA_FOLDER}:/var/lib/grafana
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
       labels:
         - traefik.enable=true
-        - traefik.http.routers.grafana.rule=Host(`${GRAFANA_DOMAIN}`)
+        - traefik.http.routers.grafana.rule=Host(`grafana.metrics.${DOMAIN}`)
         - traefik.http.routers.grafana.entryPoints=https
         - traefik.http.routers.grafana.tls=true
         - traefik.http.routers.grafana.tls.certresolver=letsencrypt
