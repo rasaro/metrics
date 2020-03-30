@@ -6,8 +6,7 @@ services:
       - metrics
       - traefik
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml
+      - ${PROMETHEUS_CONFIG_FOLDER}:/etc/prometheus
     deploy:
       mode: replicated
       replicas: 1
@@ -27,52 +26,12 @@ services:
     deploy:
       mode: global
 
-  node-exporter:
-    image: prom/node-exporter:v1.0.0-rc.0
-    command:
-      - --no-collector.arp
-      - --no-collector.bcache
-      - --no-collector.bonding
-      - --no-collector.conntrack
-      - --no-collector.edac
-      - --no-collector.entropy
-      - --no-collector.filefd
-      - --no-collector.infiniband
-      - --no-collector.ipvs
-      - --no-collector.mdadm
-      - --no-collector.netclass
-      - --no-collector.netstat
-      - --no-collector.nfs
-      - --no-collector.nfsd
-      - --no-collector.pressure
-      - --no-collector.rapl
-      - --no-collector.schedstat
-      - --no-collector.sockstat
-      - --no-collector.softnet
-      - --no-collector.textfile
-      - --no-collector.timex
-      - --no-collector.vmstat
-      - --no-collector.xfs
-      - --no-collector.zfs
-      - --path.procfs=/host/proc
-      - --path.sysfs=/host/sys
-      - --path.rootfs=/host
-    hostname: "{{.Node.Hostname}}"
-    networks:
-      - metrics
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/host:ro,rslave
-    deploy:
-      mode: global
-
   alertmanager:
     image: prom/alertmanager:v0.20.0
     networks:
       - metrics
     volumes:
-      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
+      # - ./alertmanager/config.yml:/etc/alertmanager/config.yml
       - ${ALERTMANAGER_STORAGE_FOLDER}:/alertmanager
     deploy:
       mode: replicated
