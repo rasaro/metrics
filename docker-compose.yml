@@ -13,6 +13,13 @@ services:
       placement:
         constraints:
           - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.prometheus.rule=Host(`prometheus.metrics.${DOMAIN}`)
+        - traefik.http.routers.prometheus.entryPoints=https
+        - traefik.http.routers.prometheus.tls=true
+        - traefik.http.routers.prometheus.tls.certresolver=letsencrypt
+        - traefik.http.services.prometheus.loadbalancer.server.port=9090
 
   cadvisor:
     image: rasaro/cadvisor:v0.36.0
